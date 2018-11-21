@@ -3,19 +3,19 @@ package os;
 import java.util.Date;
 import java.util.Random;
 public class Process {
-	
-	private enum action{ADD, REMOVE, SORT,SUM, SEARCH}; 
-	
+
+	private enum Action{ADD, REMOVE, SORT,SUM, SEARCH}; 
+
 	private int pid; // process id
-	private action task; //task process will do
+	private Action task; //task process will do
 	private int attempts; //number of attempts for lock
-	private int  start; //time marking of the start of a process
+	private int  start; //time marking of the start of a process / or arrival time
 	private int end; // time marking the end of a process
-	private int sleepTime; //stores how long a process should sleep
+	private int sleepTime; //stores how long a process should sleep / or burst time
 	private Process baseAddress; //stores the address of current process
 	Process nextProcess; 
 	Process previousProcess; 
-	
+
 	public Process(int PID)
 	{
 		pid = PID; 
@@ -26,7 +26,7 @@ public class Process {
 		nextProcess = null; 
 		previousProcess = null;
 	}
-	
+
 	public Process getPreviousProcess() {return previousProcess;}
 	public void setPreviousProcess(Process previous) {previousProcess = previous;	}
 	public int getPID(){return pid;}
@@ -40,37 +40,37 @@ public class Process {
 	public Process getNextProcess(){return nextProcess;}
 	public void setNextProcess(Process next){nextProcess = next;}
 	public int getAction(){return task.ordinal();}
-	
+
 	public String toString()
 	{
-			return pid + "\t" + task.ordinal()+ "\t" + attempts + "\t\t" + sleepTime +"\t\t" + getStart() +"\t\t"+ getEnd(); 
+		return pid + "\t" + task.ordinal()+ "\t" + attempts + "\t\t" + sleepTime +"\t\t" + getStart() +"\t\t"+ getEnd(); 
 	}
 	private void generate()
 	{
 		Random randomNumber = new Random(); 
 		randomNumber.setSeed(new Date().getTime());
-		
+
 		int option = randomNumber.nextInt() % 5;
 		sleepTime = 1 + randomNumber.nextInt() % 5; 
 		start = 1 + randomNumber.nextInt() % 60; 
 		switch(option)
 		{
-			case 0: 
-				task = action.ADD; 
-				break; 
-			case 1: 
-				task = action.REMOVE; 
-				break; 
-			case 2: 
-				task = action.SORT; 
+		case 0: 
+			task = Action.ADD; 
 			break; 
-			case 3: 
-				task = action.SEARCH; 
-				break; 
-			case 4: 
-				task = action.SUM; 
+		case 1: 
+			task = Action.REMOVE; 
 			break; 
-		
+		case 2: 
+			task = Action.SORT; 
+			break; 
+		case 3: 
+			task = Action.SEARCH; 
+			break; 
+		case 4: 
+			task = Action.SUM; 
+			break; 
+
 		}
 	}
 

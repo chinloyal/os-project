@@ -1,13 +1,24 @@
 package os;
 
 public class IntegerElement {
-	private String key;
+	private int key;
 	private int value;
 	
-	public String getKey() {
+	
+	public IntegerElement(int value) {
+		this.value = value;
+		key = 0;
+	}
+	
+	public IntegerElement(int value, int key) {
+		this.value = value;
+		this.key = key;
+	}
+	
+	public int getKey() {
 		return key;
 	}
-	public void setKey(String key) {
+	public void setKey(int key) {
 		this.key = key;
 	}
 	public int getValue() {
