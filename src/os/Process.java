@@ -4,59 +4,76 @@ import java.util.Date;
 import java.util.Random;
 public class Process {
 
-	private enum Action{ADD, REMOVE, SORT,SUM, SEARCH}; 
-
 	private int pid; // process id
 	private Action task; //task process will do
 	private int attempts; //number of attempts for lock
-	private int  start; //time marking of the start of a process / or arrival time
-	private int end; // time marking the end of a process
+	private long start; //time marking of the start of a process / or arrival time
+	private long end; // time marking the end of a process
 	private int sleepTime; //stores how long a process should sleep / or burst time
 	private Process baseAddress; //stores the address of current process
-	Process nextProcess; 
-	Process previousProcess; 
 
-	public Process(int PID)
-	{
+	private Random rand2 = new Random(getSeed(0, 20));
+//	private static Random rand3 = new Random(getSeed(5, 6));
+	public Process(int PID){		
 		pid = PID; 
 		generate(); 
-		attempts = 0; 
+		attempts = 0;
 		end = -1;
-		baseAddress = this; 
-		nextProcess = null; 
-		previousProcess = null;
+		baseAddress = this;
+	}
+	
+	public int getPID(){
+		return pid;
+	}
+	public int getAttempts(){
+		return attempts;
+	}
+	
+	public long getStart(){
+		return start;
+	}
+	
+	public void setStart(long start) {
+		this.start = start;
+	}
+	
+	public long getEnd(){
+		return end;
+	}
+	
+	public int getSleepTime(){
+		return sleepTime;
+	}
+	
+	public Process getBaseAddress(){
+		return baseAddress;
+	}
+	
+	public void setEnd(long completionTime){
+		end = completionTime;
+	}
+	
+	public void setAttempts(int tries){
+		attempts = tries;
+	}
+	
+	public Action getAction(){
+		return task;
 	}
 
-	public Process getPreviousProcess() {return previousProcess;}
-	public void setPreviousProcess(Process previous) {previousProcess = previous;	}
-	public int getPID(){return pid;}
-	public int getAttempts(){return attempts;}
-	public int getStart(){return start;}
-	public int getEnd(){return end;}
-	public int getSleepTime(){return sleepTime;}
-	public Process getBaseAddress(){return baseAddress;}
-	public void setEnd(int completionTime){end = completionTime;}
-	public void setAttempts(int tries){attempts = tries;}
-	public Process getNextProcess(){return nextProcess;}
-	public void setNextProcess(Process next){nextProcess = next;}
-	public int getAction(){return task.ordinal();}
-
-	public String toString()
-	{
-		return pid + "\t" + task.ordinal()+ "\t" + attempts + "\t\t" + sleepTime +"\t\t" + getStart() +"\t\t"+ getEnd(); 
+	public String toString(){		
+		return pid + "\t" + task + "\t" + attempts + "\t\t" + sleepTime +"\t\t" +getStart() +"\t\t"+ getEnd(); 
 	}
-	private void generate()
-	{
-		Random randomNumber = new Random(); 
-		randomNumber.setSeed(new Date().getTime());
-
-		int option = randomNumber.nextInt() % 5;
-		sleepTime = 1 + randomNumber.nextInt() % 5; 
-		start = 1 + randomNumber.nextInt() % 60; 
-		switch(option)
-		{
+	private void generate(){
+		Random randomNumber = new Random(System.nanoTime());
+		
+		int option = Math.abs(randomNumber.nextInt()) % 5;
+		sleepTime = 1 + Math.abs(randomNumber.nextInt()) % 5;
+//		start = Math.abs(rand2.nextInt(20));
+		
+		switch(option){
 		case 0: 
-			task = Action.ADD; 
+			task = Action.ADD;
 			break; 
 		case 1: 
 			task = Action.REMOVE; 
@@ -72,6 +89,18 @@ public class Process {
 			break; 
 
 		}
+	}
+	
+	private static long getSeed(int forNum, int modulos) {
+		int x = -1;
+        long seed = 0;
+        while(x!=forNum){
+
+            Random s = new Random(seed++);
+            x = s.nextInt(modulos);
+
+        }
+        return seed - 1;
 	}
 
 }

@@ -25,18 +25,28 @@ public class SharedList implements Iterable<IntegerElement> {
 		return new Node() == null;
 	}
 
+	//The key for the elements are generated here and are unique, so there's no need to manually
+	//set them before adding to the list, if you do set them, then they will be overrided.
 	public synchronized void insertAtBack(IntegerElement elem) {
 		if (isFull()) {
 			System.out.println("Unable to insert node into full list");
 		} else {
 			Node temp = new Node(elem);
 			if (isEmpty()) {
+				temp.getData().setKey(1);
 				head = temp;
 			} else {
-				Node current = head;
+				Node current = head, prev = null;
 				while (current.getLink() != null) {
+					prev = current;
 					current = current.getLink();
 				}
+				
+				if(prev == null)
+					temp.getData().setKey(2);
+				else
+					temp.getData().setKey(current.getData().getKey() + 1);
+				
 				current.setLink(temp);
 			}
 		}
@@ -114,7 +124,7 @@ public class SharedList implements Iterable<IntegerElement> {
 		return null;
 	}
 	
-	public void display() {
+	public void shortDisplay() {
 		StringBuilder result = new StringBuilder();
 		if(isEmpty())
 			return;
@@ -123,6 +133,12 @@ public class SharedList implements Iterable<IntegerElement> {
 			result.append("{" + i.getKey() + ": " + i.getValue() + "}" + "->");
 		}
 		System.out.println(result.toString().replaceFirst("\\->$", ""));
+	}
+	
+	public void longDisplay() {
+		for(IntegerElement elem : this) {
+			System.out.println(elem.getKey() + "\t" + elem.getValue());
+		}
 	}
 
 	public void destroy() {
