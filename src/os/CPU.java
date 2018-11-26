@@ -9,7 +9,8 @@ import java.util.TimeZone;
 
 public class CPU {
 	private final static int NUMBER_OF_CORES = 2; // 2 cpu cores
-	private static int memory = 200 * NUMBER_OF_CORES; // 200MB of memory for each core
+	private static int memory = 200; // 200MB of shared memory
+	private static int maxProcessSize = 40;
 	private Queue jobQueue;
 	private Core[] cores;
 	private List<CPURecord> records;
@@ -30,21 +31,7 @@ public class CPU {
 		cores[0].setSchedulingAlgorithm("fcfs"); // Non-preemptive
 		cores[1].setSchedulingAlgorithm("roundRobin"); // Preemptive
 		
-		if(jobQueue.getCapacity() > 0) {
-			int capacity = jobQueue.getCapacity(),
-				leftHalf = capacity / 2,
-				rightHalf = capacity - leftHalf;
-			for(int i = 0; i < leftHalf; i++) {
-				cores[0].readyQueue.enqueue(jobQueue.dequeue());
-			}
-
-			for(int i = 0; i < rightHalf; i++) {
-				cores[1].readyQueue.enqueue(jobQueue.dequeue());
-			}
-			
-			
-			
-		}
+		
 	}
 	private CPU() {
 		jobQueue = new Queue();
@@ -77,47 +64,85 @@ public class CPU {
 	}
 	
 	public void start() {
-		int index = 0;
-		Thread [] coreThreads = new Thread[NUMBER_OF_CORES];
-		
-		for(Core core : cores){
-			coreThreads[index] = new Thread(core, "CPU-" + (index + 1));
-			coreThreads[index].start();
-			index++;
-		}
-		
-		for(Thread t : coreThreads) {
-			try {
-				t.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		for(CPURecord rec : records) {
-			System.out.println(Report.writeln("==["+rec.getCPUName()+ "]=========================="));
-			System.out.printf("Average Response Time: %.2f"
-					+ "\nAverage Waiting Time: %.2f"
-					+ "\nAverage Turnaround Time: %.2f"
-					+ "\nAlgorithm: %s\n", rec.getResponseTime(), rec.getWaitingTime(), rec.getTurnAroundTime(), rec.getAlgorithm());
+		int runCount = 0;
+		while(!jobQueue.isEmpty()) {
+			distributeLoad(); // Give processors more processes
+			System.out.println(Report.writeln("Run #"+ (++runCount) + " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"));
 			
-			Report.writef("Average Response Time: %.2f"
-					+ "\r\nAverage Waiting Time: %.2f"
-					+ "\r\nAverage Turnaround Time: %.2f"
-					+ "\r\nAlgorithm: %s\r\n", rec.getResponseTime(), rec.getWaitingTime(), rec.getTurnAroundTime(), rec.getAlgorithm());
+			System.out.println(Report.writeln("[PID]\t[Task]\t[CPU]\t[Arrival Time]\t\t\t[Start Time]\t\t\t[BT]\t[End Time]\t\t\t[TAT]\t[WT]\t[RT]\t[Input]\t[Output]"));
+			
+			int index = 0;
+			Thread [] coreThreads = new Thread[NUMBER_OF_CORES];
+
+			for(Core core : cores){
+				coreThreads[index] = new Thread(core, "CPU-" + (index + 1));
+				
+				if(!core.readyQueue.isEmpty())
+					coreThreads[index].start();
+				index++;
+			}
+
+			for(Thread t : coreThreads) {
+				try {
+					t.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+
+			for(CPURecord rec : records) {
+				System.out.println(Report.writeln("==["+rec.getCPUName()+ "]=========================="));
+				System.out.printf("Average Response Time: %.2f"
+						+ "\nAverage Waiting Time: %.2f"
+						+ "\nAverage Turnaround Time: %.2f"
+						+ "\nAlgorithm: %s\n", rec.getResponseTime(), rec.getWaitingTime(), rec.getTurnAroundTime(), rec.getAlgorithm());
+
+				Report.writef("Average Response Time: %.2f"
+						+ "\r\nAverage Waiting Time: %.2f"
+						+ "\r\nAverage Turnaround Time: %.2f"
+						+ "\r\nAlgorithm: %s\r\n", rec.getResponseTime(), rec.getWaitingTime(), rec.getTurnAroundTime(), rec.getAlgorithm());
+			}
+			//Display shared list
+			System.out.println(Report.writeln("==[Shared List: After Processing]=============="));
+			System.out.println(Report.writeln("Key\tValue"));
+			Report.writeln(cpuList.longDisplay());
+			
+			records.clear();
 		}
-		
-		
-		
-		
-		//Display shared list
-		System.out.println(Report.writeln("==[Shared List: After Processing]=============="));
-		System.out.println(Report.writeln("Key\tValue"));
-		Report.writeln(cpuList.longDisplay());
-		
 		Report.close();
 	}
 	
+	public void distributeLoad() {
+		if(jobQueue.getCapacity() > 0) {
+			if(jobQueue.getCapacity() >= (memory / maxProcessSize)) {
+				int limit = memory / maxProcessSize,
+						leftHalf = limit / 2,
+						rightHalf = limit - leftHalf;
+
+
+				for(int i = 0; i < leftHalf; i++) {
+					cores[0].readyQueue.enqueue(jobQueue.dequeue());
+				}
+
+				for(int i = 0; i < rightHalf; i++) {
+					cores[1].readyQueue.enqueue(jobQueue.dequeue());
+				}
+			}else {
+				int limit = jobQueue.getCapacity(),
+						leftHalf = limit / 2,
+						rightHalf = limit - leftHalf;
+
+
+				for(int i = 0; i < leftHalf; i++) {
+					cores[0].readyQueue.enqueue(jobQueue.dequeue());
+				}
+
+				for(int i = 0; i < rightHalf; i++) {
+					cores[1].readyQueue.enqueue(jobQueue.dequeue());
+				}
+			}
+		}
+	}
 	
 	public class Core implements Runnable{
 		private int id;

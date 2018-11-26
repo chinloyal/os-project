@@ -43,8 +43,7 @@ public class Main {
 					e.printStackTrace();
 				}
 				
-				Report.writeln("[PID]\t[Task]\t[CPU]\t[Arrival Time]\t\t\t[Start Time]\t\t\t[BT]\t[End Time]\t\t\t[TAT]\t[WT]\t[RT]\t[Input]\t[Output]");
-				System.out.println("[PID]\t[Task]\t[CPU]\t[Arrival Time]\t\t\t[Start Time]\t\t\t[BT]\t[End Time]\t\t\t[TAT]\t[WT]\t[RT]\t[Input]\t[Output]");
+				
 				//Run CPU
 				CPU cpu = new CPU(numProcesses, list);
 				cpu.start();
