@@ -11,6 +11,7 @@ public class Process {
 	private long end; // time marking the end of a process
 	private int sleepTime; //stores how long a process should sleep / or burst time
 	private Process baseAddress; //stores the address of current process
+	private long arrivalTime;
 
 	private Random rand2 = new Random(getSeed(0, 20));
 //	private static Random rand3 = new Random(getSeed(5, 6));
@@ -18,8 +19,9 @@ public class Process {
 		pid = PID; 
 		generate(); 
 		attempts = 0;
-		end = -1;
+		end = 0;
 		baseAddress = this;
+		arrivalTime = 0;
 	}
 	
 	public int getPID(){
@@ -69,6 +71,7 @@ public class Process {
 		
 		int option = Math.abs(randomNumber.nextInt()) % 5;
 		sleepTime = 1 + Math.abs(randomNumber.nextInt()) % 5;
+//		System.out.println("Setted sleep time from generate to "+ sleepTime);
 //		start = Math.abs(rand2.nextInt(20));
 		
 		switch(option){
@@ -103,4 +106,17 @@ public class Process {
         return seed - 1;
 	}
 
+	public void setSleepTime(int sleepTime) {
+		this.sleepTime = sleepTime;
+	}
+
+	public long getArrivalTime() {
+		return arrivalTime;
+	}
+
+	public void setArrivalTime(long arrivalTime) {
+		this.arrivalTime = arrivalTime;
+	}
+
+	
 }

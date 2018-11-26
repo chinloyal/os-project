@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public class SharedList implements Iterable<IntegerElement> {
 	private Node head;
-
+	private static int key = 0;
 	public SharedList() {
 		head = null;
 	}
@@ -33,19 +33,16 @@ public class SharedList implements Iterable<IntegerElement> {
 		} else {
 			Node temp = new Node(elem);
 			if (isEmpty()) {
-				temp.getData().setKey(1);
+				temp.getData().setKey(++key);
 				head = temp;
 			} else {
-				Node current = head, prev = null;
+				Node current = head;
 				while (current.getLink() != null) {
-					prev = current;
 					current = current.getLink();
 				}
 				
-				if(prev == null)
-					temp.getData().setKey(2);
-				else
-					temp.getData().setKey(current.getData().getKey() + 1);
+				
+				temp.getData().setKey(++key);
 				
 				current.setLink(temp);
 			}
@@ -135,10 +132,14 @@ public class SharedList implements Iterable<IntegerElement> {
 		System.out.println(result.toString().replaceFirst("\\->$", ""));
 	}
 	
-	public void longDisplay() {
+	public String longDisplay() {
+		StringBuilder result = new StringBuilder();
 		for(IntegerElement elem : this) {
 			System.out.println(elem.getKey() + "\t" + elem.getValue());
+			result.append(elem.getKey() + "\t" + elem.getValue() +"\r\n");
 		}
+		
+		return result.toString();
 	}
 
 	public void destroy() {

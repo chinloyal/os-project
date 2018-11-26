@@ -15,14 +15,15 @@ public class Main {
 			
 			try {
 				numProcesses = sc.nextInt();
+				
 			}catch(InputMismatchException e) {
 				System.out.println("Invalid argument, please try again.");
 				continue;
+			}finally {
+				sc.close();
 			}
 			
 			if(numProcesses >= 10 && numProcesses <= 30) {
-				//Create Job queue
-				Queue jobQueue = new Queue();
 				
 				//Generate Shared list
 				SharedList list = new SharedList();
@@ -32,15 +33,17 @@ public class Main {
 				}
 				
 				//Display shared list
-				System.out.println("==[Shared List: Before Processing]==============");
-				System.out.println("Key\tValue");
-				list.longDisplay();
+				System.out.println(Report.writeln("==[Shared List: Before Processing]=============="));
+				System.out.println(Report.writeln("Key\tValue"));
+				Report.writeln(list.longDisplay());
+				
 				try {
 					Thread.sleep(2000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 				
+				Report.writeln("[PID]\t[Task]\t[CPU]\t[Arrival Time]\t\t\t[Start Time]\t\t\t[BT]\t[End Time]\t\t\t[TAT]\t[WT]\t[RT]\t[Input]\t[Output]");
 				System.out.println("[PID]\t[Task]\t[CPU]\t[Arrival Time]\t\t\t[Start Time]\t\t\t[BT]\t[End Time]\t\t\t[TAT]\t[WT]\t[RT]\t[Input]\t[Output]");
 				//Run CPU
 				CPU cpu = new CPU(numProcesses, list);

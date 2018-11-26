@@ -54,6 +54,10 @@ public class Queue {
 		return value; 
 	}
 	
+	public void destroy(){
+		while(dequeue() != null);
+	}
+	
 	/*public Process highestPriority(){
 		Process temp = front; 
 		Process highest = front; 
