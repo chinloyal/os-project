@@ -19,8 +19,6 @@ public class Main {
 			}catch(InputMismatchException e) {
 				System.out.println("Invalid argument, please try again.");
 				continue;
-			}finally {
-				sc.close();
 			}
 			
 			if(numProcesses >= 10 && numProcesses <= 30) {
